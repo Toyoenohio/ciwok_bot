@@ -36,4 +36,7 @@ jobs:
         cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:buildcache,mode=max
         
     - name: Image digest
-      run: echo "Image pushed successfully"
+      run: |
+        echo "✅ Image pushed successfully!"
+        echo "Repository: ${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot"
+        echo "Tag: latest + ${{ github.sha }}"
