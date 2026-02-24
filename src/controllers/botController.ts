@@ -203,6 +203,9 @@ async function dataSend(body: any) {
             return null;
         }
         
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
+        
         const response = await fetch(apiUrl, {
             method: 'post',
             body: JSON.stringify(body),
@@ -210,8 +213,9 @@ async function dataSend(body: any) {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + apiToken 
             },
-            timeout: 10000 // 10 segundos timeout
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         console.log(`[dataSend] Response status: ${response.status}`);
         
@@ -227,10 +231,10 @@ async function dataSend(body: any) {
         
     } catch (error: any) {
         console.error('[dataSend] ERROR:', error.message);
-        if (error.code === 'ECONNREFUSED') {
-            console.error('[dataSend] La API no responde - verificar URL y red');
-        } else if (error.code === 'ETIMEDOUT') {
+        if (error.name === 'AbortError') {
             console.error('[dataSend] Timeout - la API tardó más de 10 segundos');
+        } else if (error.code === 'ECONNREFUSED') {
+            console.error('[dataSend] La API no responde - verificar URL y red');
         }
         return null;
     }
