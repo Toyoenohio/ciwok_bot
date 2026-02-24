@@ -191,23 +191,49 @@ function splitFunc(ctxText: string) {
 }
 
 async function dataSend(body: any) {
+    const apiUrl = process.env.API_URL || 'https://scc.ciwok.com/wp-json/jet-cct/comisiones_dec';
+    const apiToken = process.env.CLIENT_TOKEN;
+    
     try {
-        const response = await fetch('https://scc.ciwok.com/wp-json/jet-cct/comisiones_dec', {
+        console.log(`[dataSend] Enviando a: ${apiUrl}`);
+        console.log(`[dataSend] Body: ${JSON.stringify(body)}`);
+        
+        if (!apiToken) {
+            console.error('[dataSend] ERROR: CLIENT_TOKEN no está configurado');
+            return null;
+        }
+        
+        const response = await fetch(apiUrl, {
             method: 'post',
             body: JSON.stringify(body),
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + process.env.CLIENT_TOKEN }
-        })
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiToken 
+            },
+            timeout: 10000 // 10 segundos timeout
+        });
 
-        if (response.status != 200) {
-            throw new Error('error al enviar la data')
+        console.log(`[dataSend] Response status: ${response.status}`);
+        
+        if (response.status !== 200) {
+            const errorText = await response.text();
+            console.error(`[dataSend] ERROR HTTP ${response.status}: ${errorText}`);
+            throw new Error(`API Error: ${response.status} - ${errorText}`);
         }
+        
         const dataResponse = await response.json();
-        return dataResponse
-    } catch (error) {
-        console.log(error)
-        return null
+        console.log(`[dataSend] Response OK: ${JSON.stringify(dataResponse)}`);
+        return dataResponse;
+        
+    } catch (error: any) {
+        console.error('[dataSend] ERROR:', error.message);
+        if (error.code === 'ECONNREFUSED') {
+            console.error('[dataSend] La API no responde - verificar URL y red');
+        } else if (error.code === 'ETIMEDOUT') {
+            console.error('[dataSend] Timeout - la API tardó más de 10 segundos');
+        }
+        return null;
     }
-
 }
 
 async function save(body: BodyTarea) {
