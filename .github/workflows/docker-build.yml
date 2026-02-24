@@ -7,9 +7,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  DOCKER_IMAGE: toyoenohio/ciwokbot
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,10 +30,10 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ env.DOCKER_IMAGE }}:latest
-          ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
-        cache-from: type=registry,ref=${{ env.DOCKER_IMAGE }}:buildcache
-        cache-to: type=registry,ref=${{ env.DOCKER_IMAGE }}:buildcache,mode=max
+          ${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:${{ github.sha }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:buildcache
+        cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:buildcache,mode=max
         
     - name: Image digest
-      run: echo ${{ steps.build.outputs.digest }}
+      run: echo "Image pushed successfully"
