@@ -1,6 +1,6 @@
 {
   "name": "ciwokBot",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "Bot designed to efficiently log and manage activities for different clients. This tool streamlines the organization and tracking of interactions with each client, enabling effective documentation of performed activities. Enhance communication and task monitoring through a comprehensive solution for client management on the Telegram platform.",
   "main": "index.js",
   "author": "Gustavo Blanco",
