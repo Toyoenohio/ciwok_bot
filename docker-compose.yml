@@ -1,11 +1,29 @@
 
+version: '3.8'
+
 services:
-  ciwork_bot:
-    image: cue2g/ciwok_bot:latest
+  ciwok_bot:
+    image: toyoenohio/ciwokbot:latest
+    build: .
     environment:
-      - TOKEN=
-      - DB_PW=
-      - DB_USER=
-      - DB_NAME=
-      - BOTNAME=
-      - CLIENT_TOKEN=
+      - TOKEN=${TOKEN}
+      - DB_PW=${DB_PW}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - BOTNAME=${BOTNAME}
+      - CLIENT_TOKEN=${CLIENT_TOKEN}
+      - API_URL=${API_URL:-https://scc.ciwok.com/wp-json/jet-cct/comisiones_dec}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
