@@ -1,6 +1,6 @@
 # ciwokBot
 
-**Version**: 1.0.4
+**Version**: 1.0.5
 
 Bot de Telegram para gestión de tareas y comisiones de equipos de trabajo. Permite registrar tareas asignadas entre miembros de un grupo y enviar esa información a un sistema externo (WordPress/WooCommerce o API personalizada).
 
