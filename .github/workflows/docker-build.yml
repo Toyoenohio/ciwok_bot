@@ -24,16 +24,18 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USER }}
         password: ${{ secrets.DOCKERHUB_PASS }}
       
-    - name: Build and push
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:latest
-          ${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:${{ github.sha }}
-        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:buildcache
-        cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/ciwokbot:buildcache,mode=max
+    - name: Build and push 
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # CAMBIA ESTO:
+          tags: |
+            toyoenohio/ciwokbot:latest
+            toyoenohio/ciwokbot:${{ github.sha }}
+          # También corrige las referencias de caché si las usas:
+          cache-from: type=registry,ref=toyoenohio/ciwokbot:buildcache
+          cache-to: type=registry,ref=toyoenohio/ciwokbot:buildcache,mode=max
         
     - name: Image digest
       run: |
