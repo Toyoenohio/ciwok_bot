@@ -192,26 +192,29 @@ function splitFunc(ctxText: string) {
 
 async function dataSend(body: any) {
     const apiUrl = process.env.API_URL || 'https://scc.ciwok.com/wp-json/jet-cct/comisiones_dec';
-    const apiToken = process.env.CLIENT_TOKEN;
+    const apiUser = process.env.WP_USER;
+    const apiPassword = (process.env.CLIENT_TOKEN || '').replace(/\s+/g, '');
     
     try {
         console.log(`[dataSend] Enviando a: ${apiUrl}`);
         console.log(`[dataSend] Body: ${JSON.stringify(body)}`);
         
-        if (!apiToken) {
-            console.error('[dataSend] ERROR: CLIENT_TOKEN no está configurado');
+        if (!apiUser || !apiPassword) {
+            console.error('[dataSend] ERROR: WP_USER o CLIENT_TOKEN no configurado');
             return null;
         }
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
         
+        // WordPress Application Passwords usan HTTP Basic Auth (no Bearer/JWT).
+        const auth = 'Basic ' + Buffer.from(`${apiUser}:${apiPassword}`).toString('base64');
         const response = await fetch(apiUrl, {
             method: 'post',
             body: JSON.stringify(body),
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiToken 
+                'Authorization': auth
             },
             signal: controller.signal
         });
